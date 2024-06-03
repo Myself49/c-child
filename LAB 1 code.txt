@@ -1,0 +1,45 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/wait.h>
+
+
+int fibonacci_seq(int n) { /*Fibonacci function*/
+    if (n <= 1) {
+        return n;
+    } else {
+        return fibonacci_seq(n-1) + fibonacci_seq(n-2);
+    }
+}
+
+
+int main() {
+    int n;
+    printf("Enter number for Fibonacci: ");
+    scanf("%d", &n);
+    
+    if (n < 0) {
+        fprintf(stderr, "Error: Enter non-negative number");
+        return 1;
+    }
+    
+    pid_t pid;
+    pid = fork(); /*Fork a child process*/
+    
+    if (pid < 0) {
+        fprintf(stderr, "Fork failed");
+        return 1;
+    } else if (pid == 0) { /*Child process*/
+        printf("Process id of Child: %d", getpid());
+        printf("\nFibonacci sequence:", n);
+        
+        for (int i =0; i < n; i++) { /*Printing fibonacci sequence*/
+            printf("%d ", fibonacci_seq(i));
+        }
+        printf("\n");
+    } else { /*Parent process*/
+        wait(NULL);
+        printf("Parent id: %d", getpid());
+    }
+    return 0;
+}
